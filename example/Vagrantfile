@@ -1,0 +1,88 @@
+VAGRANT_API_VERSION = '2'
+
+BOOTSTRAP = true
+
+MACHINES = [
+  {
+    :name => 's1',
+    :ip => '192.168.0.2',
+    :group => :servers
+  },
+  {
+    :name => 's2',
+    :ip => '192.168.0.3',
+    :group => :servers
+  },
+  {
+    :name => 's3',
+    :ip => '192.168.0.4',
+    :group => :servers
+  },
+  {
+    :name => 'c1',
+    :ip => '192.168.0.5',
+    :group => :clients
+  }
+].select do |machine|
+  group = machine[:group]
+  group === :servers || group === :clients
+end
+
+ANSIBLE_GROUP_VARS = {
+  'all:vars' => {
+    'consul_start_join' => MACHINES.map { |machine| machine[:ip] }
+  },
+  'servers:vars' => {
+    'consul_server' => true
+  }
+}
+
+ANSIBLE_GROUPS = MACHINES.reduce(ANSIBLE_GROUP_VARS) do |groups, machine|
+  group, name = machine.values_at(:group, :name)
+
+  unless groups.key?(group)
+    groups[group] = []
+  end
+
+  groups[group].push(name)
+
+  groups
+end
+
+bootstrapped = false
+ANSIBLE_HOST_VARS = MACHINES.reduce({}) do |host_vars, machine|
+  name, ip, group = machine.values_at(:name, :ip, :group)
+
+  host_vars[name] = {
+    'consul_advertise_addr' => ip
+  }
+
+  case group
+  when :servers
+    if BOOTSTRAP && !bootstrapped
+      bootstrapped = true
+      host_vars[name]['consul_bootstrap'] = true
+    end
+  when :clients
+    host_vars[name]['consul_ui'] = true
+  end
+
+  host_vars
+end
+
+Vagrant.configure(VAGRANT_API_VERSION) do |config|
+  MACHINES.each do |machine|
+    name, ip = machine.values_at(:name, :ip)
+
+    config.vm.define name do |machine_config|
+      machine_config.vm.box = 'ubuntu/trusty64'
+      machine_config.vm.hostname = name
+      machine_config.vm.network :private_network, ip: ip
+      machine_config.vm.provision :ansible do |ansible|
+        ansible.groups = ANSIBLE_GROUPS
+        ansible.host_vars = ANSIBLE_HOST_VARS
+        ansible.playbook = 'playbook.yml'
+      end
+    end
+  end
+end
