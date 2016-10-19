@@ -1,0 +1,11 @@
+description "Run consul agent"
+
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on runlevel [016]
+
+respawn
+
+setuid {{ consul_user }}
+setgid {{ consul_group }}
+
+exec {{ consul_bin_dir }}/consul agent -config-dir {{ consul_config_dir }}

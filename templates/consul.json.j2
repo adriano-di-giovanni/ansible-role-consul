@@ -1,0 +1,41 @@
+{
+
+{% if consul_server and consul_bootstrap %}
+  "bootstrap": true,
+{% endif %}
+
+  "server": {{ consul_server | ternary('true', 'false') }},
+
+{% if consul_advertise_addr is defined %}
+  "advertise_addr": "{{ consul_advertise_addr }}",
+{% endif %}
+
+{% if consul_bind_addr is defined %}
+  "bind_addr": {{ consul_bind_addr }},
+{% endif %}
+
+  "datacenter": "{{ consul_datacenter }}",
+  "data_dir": "{{ consul_data_dir }}",
+
+{% if consul_enable_syslog %}
+  "enable_syslog": true,
+{% endif %}
+
+{% if consul_encrypt is defined %}
+  "encrypt": "{{ consul_encrypt }}",
+{% endif %}
+
+{% if not consul_bootstrap and consul_start_join is defined %}
+  "start_join": [{{ consul_start_join |
+    difference(ansible_all_ipv4_addresses) |
+    map('wrap') |
+    join(', ') }}],
+{% endif %}
+
+{% if consul_ui %}
+  "ui": true,
+  "ui_dir": "{{ consul_ui_dir }}",
+{% endif %}
+
+  "log_level": "{{ consul_log_level }}"
+}

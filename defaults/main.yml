@@ -1,0 +1,38 @@
+---
+consul_version: 0.7.0
+
+consul_archive: 'consul_{{ consul_version }}_linux_amd64.zip'
+consul_archive_url: 'https://releases.hashicorp.com/consul/{{ consul_version }}/{{ consul_archive }}'
+
+consul_ui_archive: 'consul_{{ consul_version }}_web_ui.zip'
+consul_ui_archive_url: 'https://releases.hashicorp.com/consul/{{ consul_version }}/{{ consul_ui_archive }}'
+
+consul_download_dir: /tmp
+consul_download_file: '{{ consul_download_dir }}/{{ consul_archive }}'
+consul_ui_download_file: '{{ consul_download_dir }}/{{ consul_ui_archive }}'
+
+consul_group: consul
+consul_user: consul
+
+consul_home_dir: /opt/consul
+consul_bin_dir: '{{ consul_home_dir }}/bin'
+consul_ui_dir: '{{ consul_home_dir }}/dist'
+
+consul_data_dir: '{{ consul_home_dir }}/data'
+
+consul_config_dir: /etc/consul.d
+consul_config_template: consul.json.j2
+consul_config_file: '{{ consul_config_dir }}/consul.json'
+
+consul_bootstrap: false
+consul_server: false
+consul_datacenter: default
+# consul_encrypt is not defined by default
+consul_log_level: info
+consul_enable_syslog: false
+
+consul_upstart_template: consul.conf.j2
+
+consul_ui: false
+
+consul_handler_restart: restart consul

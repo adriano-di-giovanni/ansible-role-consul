@@ -1,0 +1,84 @@
+---
+- name: install dependencies
+  apt:
+    package: '{{ item }}'
+    update_cache: yes
+    cache_valid_time: 3600
+    state: installed
+  with_items:
+    - unzip
+
+- name: check the download status of consul
+  stat: path={{ consul_download_file }}
+  register: consul_download_check_result
+
+- name: download consul archive
+  get_url:
+    url: '{{ consul_archive_url }}'
+    dest: '{{ consul_download_dir }}'
+  register: consul_download_result
+  when: not consul_download_check_result.stat.exists
+
+- name: create consul group
+  group:
+    name: '{{ consul_group }}'
+    state: present
+    system: yes
+  register: consul_group_create_result
+
+- name: create consul user
+  user:
+    name: '{{ consul_user }}'
+    group: '{{ consul_group }}'
+    system: yes
+  when: consul_group_create_result | changed
+
+- name: create consul directory structure
+  file:
+    state: directory
+    path: '{{ item }}'
+    owner: '{{ consul_user }}'
+    group: '{{ consul_group }}'
+    mode: 0755
+  with_items:
+    - '{{ consul_home_dir }}'
+    - '{{ consul_bin_dir }}'
+    - '{{ consul_data_dir }}'
+    - '{{ consul_config_dir }}'
+
+- name: install consul
+  unarchive:
+    src: '{{ consul_download_file }}'
+    dest: '{{ consul_bin_dir }}'
+    owner: '{{ consul_user }}'
+    group: '{{ consul_group }}'
+    copy: no
+  when: consul_download_result | changed
+
+- name: generate a cryptographically suitable key
+  shell: '{{ consul_bin_dir}}/consul keygen'
+  register: consul_keygen_result
+  run_once: true
+
+- set_fact: consul_encrypt={{ consul_keygen_result.stdout }}
+
+- name: consul config file
+  copy:
+    content: '{{ item | to_nice_json }}'
+    dest: '{{ consul_config_file }}'
+    owner: '{{ consul_user }}'
+    group: '{{ consul_group }}'
+    mode: 0755
+  with_template: '{{ consul_config_template }}'
+  notify:
+    - '{{ consul_handler_restart }}'
+
+- name: consul upstart script
+  template:
+    src: '{{ consul_upstart_template }}'
+    dest: /etc/init/consul.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - '{{ consul_handler_restart }}'

@@ -1,0 +1,20 @@
+galaxy_info:
+  author: Adriano Di Giovanni
+
+  description: Ansible role for Consul
+
+  license: MIT
+
+  min_ansible_version: 1.9
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+
+  galaxy_tags:
+    - cloud
+    - clustering
+    - monitoring
+    - networking
+    - system

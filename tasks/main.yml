@@ -1,0 +1,4 @@
+---
+- include: install.yml
+- { include: install_ui.yml, when: consul_ui }
+- service: name=consul state=restarted enabled=yes

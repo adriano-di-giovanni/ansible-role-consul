@@ -1,0 +1,31 @@
+---
+- name: check the download status of consul web ui
+  stat: path={{ consul_ui_download_file }}
+  register: consul_ui_download_check_result
+
+- name: download consul web ui archive
+  get_url: >
+    url={{ consul_ui_archive_url }}
+    dest={{ consul_download_dir }}
+  register: consul_ui_download_result
+
+- name: create consul web ui directory
+  file: >
+    state=directory
+    path={{ consul_ui_dir }}
+
+- name: install consul web ui
+  unarchive: >
+    src={{ consul_ui_download_file }}
+    dest={{ consul_ui_dir }}
+    copy=no
+  when: consul_ui_download_result | changed
+
+- name: set ownership
+  file: >
+    state=directory
+    path={{ consul_ui_dir }}
+    owner={{ consul_user }}
+    group={{ consul_group }}
+    recurse=yes
+  when: consul_ui_download_result | changed
