@@ -18,6 +18,11 @@ consul_home_dir: /opt/consul
 consul_bin_dir: '{{ consul_home_dir }}/bin'
 consul_ui_dir: '{{ consul_home_dir }}/dist'
 
+consul_tls_dir: '{{ consul_home_dir }}/tls'
+consul_tls_ca_file: '{{ consul_tls_dir }}/ca.crt.pem'
+consul_tls_cert_file: '{{ consul_tls_dir }}/{{ consul_datacenter }}.consul.crt.pem'
+consul_tls_key_file: '{{ consul_tls_dir }}/{{ consul_datacenter }}.consul.key.pem'
+
 consul_data_dir: '{{ consul_home_dir }}/data'
 
 consul_config_dir: /etc/consul.d
@@ -27,7 +32,7 @@ consul_config_file: '{{ consul_config_dir }}/consul.json'
 consul_bootstrap: false
 consul_server: false
 consul_datacenter: default
-# consul_encrypt is not defined by default
+
 consul_log_level: info
 consul_enable_syslog: false
 
@@ -36,3 +41,5 @@ consul_upstart_template: consul.conf.j2
 consul_ui: false
 
 consul_handler_restart: restart consul
+
+consul_tls: false

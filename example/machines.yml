@@ -1,0 +1,17 @@
+---
+machines:
+  - name: 's1'
+    ip: '192.168.0.2'
+    group: 'servers'
+
+  - name: 's2'
+    ip: '192.168.0.3'
+    group: 'servers'
+
+  - name: 's3'
+    ip: '192.168.0.4'
+    group: 'servers'
+
+  - name: 'c1'
+    ip: '192.168.0.5'
+    group: 'clients'

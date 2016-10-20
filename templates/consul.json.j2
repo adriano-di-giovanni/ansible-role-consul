@@ -21,6 +21,7 @@
   "enable_syslog": true,
 {% endif %}
 
+{# https://www.consul.io/docs/agent/encryption.html #}
 {% if consul_encrypt is defined %}
   "encrypt": "{{ consul_encrypt }}",
 {% endif %}
@@ -35,6 +36,16 @@
 {% if consul_ui %}
   "ui": true,
   "ui_dir": "{{ consul_ui_dir }}",
+{% endif %}
+
+{# https://www.consul.io/docs/agent/encryption.html #}
+{% if consul_tls %}
+  "ca_file": "{{ consul_tls_ca_file }}",
+  "cert_file": "{{ consul_tls_cert_file }}",
+  "key_file": "{{ consul_tls_key_file }}",
+  "verify_incoming": true,
+  "verify_outgoing": true,
+  "verify_server_hostname": true,
 {% endif %}
 
   "log_level": "{{ consul_log_level }}"

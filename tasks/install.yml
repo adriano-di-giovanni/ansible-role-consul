@@ -82,3 +82,26 @@
     mode: 0644
   notify:
     - '{{ consul_handler_restart }}'
+
+- name: create tls directory
+  file:
+    state: directory
+    path: '{{ consul_tls_dir }}'
+    owner: '{{ consul_user }}'
+    group: '{{ consul_group }}'
+  when: consul_tls
+
+- name: copy certificates
+  copy:
+    content: '{{ item.content }}'
+    dest: '{{ item.dest }}'
+    owner: '{{ consul_user }}'
+    group: '{{ consul_group }}'
+  with_items:
+    - content: '{{ consul_tls_ca_file_content }}'
+      dest: '{{ consul_tls_ca_file }}'
+    - content: '{{ consul_tls_cert_file_content }}'
+      dest: '{{ consul_tls_cert_file }}'
+    - content: '{{ consul_tls_key_file_content }}'
+      dest: '{{ consul_tls_key_file }}'
+  when: consul_tls
