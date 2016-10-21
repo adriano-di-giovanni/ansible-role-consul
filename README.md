@@ -1,5 +1,7 @@
 # Ansible Role: Consul
 
+[![Build Status](https://travis-ci.org/adriano-di-giovanni/ansible-role-consul.svg?branch=master)](https://travis-ci.org/adriano-di-giovanni/ansible-role-consul)
+
 Ansible role for [Consul](https://www.consul.io/):
 
 * basic, opinionated install
