@@ -31,10 +31,10 @@ consul_config_file: '{{ consul_config_dir }}/consul.json'
 
 consul_bootstrap: false
 consul_server: false
-consul_datacenter: default
+# consul_datacenter: default
 
 consul_log_level: info
-consul_enable_syslog: false
+consul_enable_syslog: true
 
 consul_upstart_template: consul.conf.j2
 
