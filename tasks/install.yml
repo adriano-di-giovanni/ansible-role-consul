@@ -89,7 +89,7 @@
     path: '{{ consul_tls_dir }}'
     owner: '{{ consul_user }}'
     group: '{{ consul_group }}'
-  when: consul_tls
+  when: consul_tls|bool
 
 - name: copy certificates
   copy:
@@ -104,4 +104,4 @@
       dest: '{{ consul_tls_cert_file }}'
     - content: '{{ consul_tls_key_file_content }}'
       dest: '{{ consul_tls_key_file }}'
-  when: consul_tls
+  when: consul_tls|bool
