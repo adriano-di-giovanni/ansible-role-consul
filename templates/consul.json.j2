@@ -11,7 +11,7 @@
 {% endif %}
 
 {% if consul_bind_addr is defined %}
-  "bind_addr": {{ consul_bind_addr }},
+  "bind_addr": "{{ consul_bind_addr }}",
 {% endif %}
 
   "datacenter": "{{ consul_datacenter }}",
