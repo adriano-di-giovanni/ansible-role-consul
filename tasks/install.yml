@@ -59,8 +59,10 @@
   shell: '{{ consul_bin_dir}}/consul keygen'
   register: consul_keygen_result
   run_once: true
+  when: consul_encrypt is not defined
 
 - set_fact: consul_encrypt={{ consul_keygen_result.stdout }}
+  when: consul_encrypt is not defined
 
 - name: consul config file
   copy:
